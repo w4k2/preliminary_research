@@ -5,17 +5,18 @@ import time
 from matplotlib.pyplot import imread
 from scipy.ndimage import gaussian_filter
 from scipy.ndimage import grey_erosion, grey_dilation
+import cv2
 
 # Definitions
 D = 2                   # Universe dimensions [Please stay in 2D]
-N = 64                  # Quant per dimension
-void = .0001            # Void strength
-eternity = 100000000    # Iteration limit
-fps = 25                # Frames per second
-rs = None               # World number
+N = 1080                  # Quant per dimension
+void = 1            # Void strength
+fps = 25               # Frames per second
+eternity = fps * 15     # Iteration limit
+rs = 1410                 # World number
 gaia = False            # Gaia or Medeja hypothesis
-comsize = 2             # Center of mind size
-godfinger = (31,31)     # Universe startingpoint
+comsize = 3             # Center of mind size
+godfinger = (1080//2,1080//2)     # Universe startingpoint
 
 # Carefully declare frequency of mind
 #  9 — MESSAGE FROM SPACE
@@ -24,17 +25,30 @@ godfinger = (31,31)     # Universe startingpoint
 # .5 — REM
 # .2 — DESERT WANDERER
 #  0 — MINDLESS
-fom = .5
+fom = 1
 fmind = np.random.normal(size=[2*comsize for _ in range(D)])*fom
 
+# Get filename
+filename = "videos/%s-D%i-N%i-V010%i-C%i-v%05i-FOM%3.3f.mp4" % (
+    "GAIA" if gaia else "MEDEJA",
+    D, N, void*1000000, comsize,rs,
+    fom
+)
+
 # Helpers
+out = cv2.VideoWriter(filename,
+                      cv2.VideoWriter_fourcc(*'mp4v'),
+                      fps, (N, N), False)
+
 def whereismy(mind):
     img = np.copy(mind)
     img -= np.min(img)
     img /= np.max(img)
     img = (img*255).astype(np.uint8)
     png.from_array(img, 'L').save("foo.png")
-    time.sleep(1/fps)
+    #time.sleep(1/fps)
+    out.write(img)
+
 
 # Create D-dimensional mind of N quants
 mind = np.zeros([N for _ in range(D)])
@@ -46,6 +60,9 @@ else:
     rs = -1
 mind[godfinger] = 1
 energy = 200
+
+for i in range(fps//2):
+    whereismy(mind)
 
 # Iterate the world's mind
 for i in range(eternity):
@@ -81,6 +98,7 @@ for i in range(eternity):
     mind += goddess / r
     mind /= np.max(np.abs(mind))
 
+    #if i > 1:
     # Observe state
     whereismy(mind)
     if gaia:
@@ -91,3 +109,5 @@ for i in range(eternity):
         print("MEDEJA:%i-%i-%i | Y %010i | Energy: %10.3f | Medeja: %05i %%" % (
             rs, D, N,
             i,_energy,_energy/np.abs(medeja_strength)))
+
+out.release()
