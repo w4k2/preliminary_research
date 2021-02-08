@@ -9,21 +9,22 @@ import cv2
 
 # Definitions
 D = 2                   # Universe dimensions [Please stay in 2D]
-N = 1080//8                  # Quant per dimension
-#N = 512                  # Quant per dimension
-void = .1            # Void strength
+N = 1080//4                  # Quant per dimension
+N = 512                  # Quant per dimension
+void = .0011            # Void strength
 fps = 25               # Frames per second
-eternity = fps * 500     # Iteration limit
+eternity = fps * 15     # Iteration limit
 rs = 1410                 # World number
 gaia = True            # Gaia or Medeja hypothesis
 comsize = 2             # Center of mind size
-godfinger = (1080//16,1080//16)     # Universe startingpoint
-#godfinger = (255,255)
+godfinger = (1080//8,1080//8)     # Universe startingpoint
+godfinger = (comsize,comsize)
 gaia_counter = fps * 1
 
 # Input
-#input = imread('lena.png')
-# print(input.shape)
+input = imread('lena.png')
+print(input.shape)
+cap = cv2.VideoCapture(0)
 
 
 # Carefully declare frequency of mind
@@ -33,7 +34,7 @@ gaia_counter = fps * 1
 # .5 — REM
 # .2 — DESERT WANDERER
 #  0 — MINDLESS
-fom = 1
+fom = 2
 fmind = np.random.normal(size=[2*comsize for _ in range(D)])*fom
 
 # Get filename
@@ -80,7 +81,6 @@ def whereismy(mind, mind2, mind3):
     ccimg = np.copy(cimg)
     ccimg = ccimg.reshape(ccimg.shape[0], -1).astype(np.uint8).copy()
     png.from_array(ccimg, 'RGB').save("foo.png")
-    time.sleep(1/fps)
 
 
 # Create D-dimensional mind of N quants
@@ -112,6 +112,9 @@ for i in range(fps//2):
 
 # Iterate the world's mind
 for i in range(eternity):
+    # Capture frame-by-frame
+    #ret, frame = cap.read()
+
     # Establish normalized center of mind
     com = mind[godfinger[0]-comsize:godfinger[0]+comsize,
                godfinger[1]-comsize:godfinger[1]+comsize]
@@ -130,7 +133,6 @@ for i in range(eternity):
 
     #com = np.mean([com, com2, com3], axis=0)
 
-
     # Change mind by closed correlation
     mind = signal.correlate2d(mind, com+fmind, mode='same', boundary='wrap')
     mind = grey_dilation(mind,footprint=com, mode='wrap')
@@ -144,39 +146,6 @@ for i in range(eternity):
     mind3 = grey_dilation(mind3,footprint=com3, mode='wrap')
     mind3 = grey_erosion(mind3,footprint=com3, mode='wrap')
 
-    # Extramass
-    """
-    print(com.shape, fmind.shape)
-    rr = 4
-    a = np.random.randint(0, N-rr, size=2)
-
-    print(a)
-
-
-    mind = signal.correlate2d(mind, mind[a[0]:a[0]+rr,
-                                         a[1]:a[1]+rr]+fmind, mode='same', boundary='wrap')
-    mind2 = signal.correlate2d(mind2, mind[a[0]:a[0]+rr,
-                                           a[1]:a[1]+rr]+fmind, mode='same', boundary='wrap')
-    mind3 = signal.correlate2d(mind3, mind[a[0]:a[0]+rr,
-                                           a[1]:a[1]+rr]+fmind, mode='same', boundary='wrap')
-    fp = mind[a[0]:a[0]+rr,a[1]:a[1]+rr]
-    """
-
-
-    """
-    if np.sum(fp) > 0:
-        mind = grey_dilation(mind,footprint=fp, mode='wrap')
-        mind = grey_erosion(mind,footprint=fp, mode='wrap')
-        mind2 = grey_dilation(mind2,footprint=fp, mode='wrap')
-        mind2 = grey_erosion(mind2,footprint=fp, mode='wrap')
-        mind3 = grey_dilation(mind3,footprint=fp, mode='wrap')
-        mind3 = grey_erosion(mind3,footprint=fp, mode='wrap')
-    """
-
-    #mind = grey_dilation(mind,footprint=com, mode='wrap')
-    #mind = grey_erosion(mind,footprint=com, mode='wrap')
-
-
     # Measure energy
     _energy = np.sum(mind)
     _energy2 = np.sum(mind2)
@@ -184,8 +153,6 @@ for i in range(eternity):
 
     if i > gaia_counter:
         gaia = False
-
-    #gaia = i%2
 
     # Gaia-Medeja dychotomy
     if gaia:  # Gaia
@@ -213,10 +180,16 @@ for i in range(eternity):
         r3 = (energy-_energy3)/medeja_strength3
 
 
-    # Add input image
-    #mind += input[:,:,0]*.1
-    #mind2 += input[:,:,1]*.1
-    #mind3 += input[:,:,2]*.1
+    #gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+
+    #print(frame.shape, input.shape)
+
+    #input = frame
+
+    mind += input[:N,:N,0]*.1
+    mind2 += input[:N,:N,1]*.1
+    mind3 += input[:N,:N,2]*.1
 
     # Destruct and normalize
     mind += goddess / r
@@ -228,7 +201,18 @@ for i in range(eternity):
     mind3 += goddess3 / r3
     mind3 /= np.max(np.abs(mind3))
 
+    #if i > 1:
     # Observe state
     whereismy(mind, mind2, mind3)
+    """
+    if gaia:
+        print("GAIA:%i-%i-%i | Y %010i | Energy: %10.3f" % (
+            rs, D, N,
+            i,_energy))
+    else:
+        print("MEDEJA:%i-%i-%i | Y %010i | Energy: %10.3f | Medeja: %05i %%" % (
+            rs, D, N,
+            i,_energy,_energy/np.abs(medeja_strength)))
+    """
 
 out.release()
