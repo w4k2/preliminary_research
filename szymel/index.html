@@ -1,0 +1,29 @@
+---
+layout: default
+---
+
+<div class="columns is-multiline">
+	<div class="column is-one-quarter">
+		<div class="card has-background-warning">
+			<div class="card-content">
+				<p class="title">
+					“Po co ja to zrobiłem?”
+				</p>
+				<p class="subtitle">
+					Paweł
+				</p>
+			</div>
+		</div>
+	</div>
+
+  {% assign simulations = site.simulations | sort: 'rs' | reverse %}
+
+	{% for simulation in simulations %}
+  	<div class="column is-one-quarter">
+      <a href="{{ simulation.url }}">
+  			<img src="/thumbnails/{{simulation.rs}}.png" alt="Placeholder image">
+      </a>
+  	</div>
+	{% endfor %}
+
+</div>

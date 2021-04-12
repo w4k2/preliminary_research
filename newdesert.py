@@ -11,12 +11,16 @@ from PIL import Image, ImageFont, ImageDraw
 import datetime
 
 
+
 rs = int(datetime.datetime.now().timestamp())
 np.random.seed(rs)
+fpss = [12, 24, 25, 50, 60]
+fpss = [12]
 Ns = [16,32,64,128,256, 512, 1024, 2048]
+Ns = [8]
 # Definitions
 D = 2                   # Universe dimensions [Please stay in 2D]
-fps = 25               # Frames per second
+fps = np.random.choice(fpss)               # Frames per second
 gaia = True            # Gaia or Medeja hypothesis
 
 N = np.random.choice(Ns)                  # Quant per dimension
@@ -26,7 +30,7 @@ dyno = np.random.randint(0,2) == 0
 additive = np.random.randint(0,2) == 0
 # TOSS
 void = np.abs(np.random.normal(0, .5))#.1            # Void strength
-eternity = fps * np.random.randint(5,30)     # Iteration limit
+eternity = fps * 2 # np.random.randint(5,10)     # Iteration limit
 comsize = np.random.randint(1,3)             # Center of mind size
 gaia_counter = fps * np.random.randint(0,30)
 mono = np.random.randint(0, 10)
@@ -63,13 +67,19 @@ def text_phantom(text, size, c=(0,0,0)):
     # Convert the canvas into an array with values in [0, 1]
     return (255 - np.asarray(canvas)) / 255.0
 
-
-
 print("FOM%.3f" % fom, "T", eternity//fps, "GC", gaia_counter//fps, "N", N, "RS", rs, "CS", comsize)
 
 
 # Get filename
 filename = "videos/%i.mp4" % (rs)
+pngfilename = "thumbnails/%i.png" % (rs)
+colfilename = "szymel/_simulations/%i.md" % (rs)
+
+# Save to collection
+file1 = open(colfilename,"w")
+L = ["---\n","rs: %i\n" % rs,"---\n"]
+file1.writelines(L)
+file1.close() #to change file access modes
 
 # Helpers
 out = cv2.VideoWriter(filename,
@@ -163,6 +173,7 @@ def whereismy(mind, mind2, mind3, ii, ee):
     ccimg = np.copy(cimg)
     ccimg = ccimg.reshape(ccimg.shape[0], -1).astype(np.uint8).copy()
     png.from_array(ccimg, 'RGB').save("foo.png")
+    png.from_array(ccimg, 'RGB').save(pngfilename)
     time.sleep(1/fps)
 
 
@@ -215,9 +226,10 @@ for i in range(eternity):
             v = np.abs(np.random.normal(0, .5))
 
 
-    text_ttp = "♥ %.5f-%s-%s%s\n♣ %i\n\nF%.3f/V%.3f\nT%i/GC%i\nN%i/CS%i/M%i" % (
+    text_ttp = "♥ %.5f-%s-%s%s\n♣ %i\n\nF%.3f/V%.3f\nT%i/GC%i\nN%i/CS%i/M%i\n%iFPS" % (
         (i+1)/eternity, 'Gaia' if gaia else 'Medea', 'D' if dyno else '-', 'A' if additive else '-', rs,
-        fom, void, eternity//fps, gaia_counter//fps,N,comsize,mono
+        fom, void, eternity//fps, gaia_counter//fps,N,comsize,mono,
+        fps
     )
 
     # Changing fmind
