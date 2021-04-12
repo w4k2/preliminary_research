@@ -1,2 +1,8 @@
 videos
+thumbnails
 .DS_Store
+szymel/_site
+szymel/.sass-cache
+szymel/.jekyll-cache
+szymel/.jekyll-metadata
+szymel/vendor
