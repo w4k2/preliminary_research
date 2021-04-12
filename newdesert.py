@@ -13,12 +13,11 @@ import datetime
 
 rs = int(datetime.datetime.now().timestamp())
 np.random.seed(rs)
-Ns = [16,32,64,128,256, 512]
+Ns = [16,32,64,128,256, 512, 1024, 2048]
 # Definitions
 D = 2                   # Universe dimensions [Please stay in 2D]
 fps = 25               # Frames per second
 gaia = True            # Gaia or Medeja hypothesis
-
 
 N = np.random.choice(Ns)                  # Quant per dimension
 godfinger = (N//2,N//2)
@@ -26,13 +25,13 @@ godfinger = (N//2,N//2)
 dyno = np.random.randint(0,2) == 0
 additive = np.random.randint(0,2) == 0
 # TOSS
-void = np.abs(np.random.normal(0, 1))#.1            # Void strength
+void = np.abs(np.random.normal(0, .5))#.1            # Void strength
 eternity = fps * np.random.randint(5,30)     # Iteration limit
 comsize = np.random.randint(1,3)             # Center of mind size
 gaia_counter = fps * np.random.randint(0,30)
-mono = np.random.randint(0, 5)
-v = np.abs(np.random.normal(0, 1))
-fom = np.abs(np.random.normal(0, 1))    # Spoistość może się zerwać przy v
+mono = np.random.randint(0, 10)
+v = np.abs(np.random.normal(0, .5))
+fom = np.abs(np.random.normal(0, .5))    # Spoistość może się zerwać przy v
 
 
 # Carefully declare frequency of mind
@@ -205,16 +204,15 @@ for i in range(eternity):
             #gaia_counter = fps * np.random.randint(0,30)
             mono = np.random.randint(0, 5)
             if additive:
-                void += np.abs(np.random.normal(0, 1))#.1            # Void strength
-                fom += np.abs(np.random.normal(0, 1))    # Spoistość może się zerwać przy v
+                void += np.abs(np.random.normal(0, .5))#.1            # Void strength
+                fom += np.abs(np.random.normal(0, .5))    # Spoistość może się zerwać przy v
 
             else:
-                void = np.abs(np.random.normal(0, 1))#.1            # Void strength
-                fom = np.abs(np.random.normal(0, 1))    # Spoistość może się zerwać przy v
+                void = np.abs(np.random.normal(0, .5))#.1            # Void strength
+                fom = np.abs(np.random.normal(0, .5))    # Spoistość może się zerwać przy v
 
 
-            v = np.abs(np.random.normal(0, 1))
-
+            v = np.abs(np.random.normal(0, .5))
 
 
     text_ttp = "♥ %.5f-%s-%s%s\n♣ %i\n\nF%.3f/V%.3f\nT%i/GC%i\nN%i/CS%i/M%i" % (

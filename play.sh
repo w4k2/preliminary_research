@@ -1,2 +1,2 @@
 #!/bin/bash
-while [ true ]; do python newdesert.py; done
+while [ true ]; do /usr/bin/python3 newdesert.py; done
